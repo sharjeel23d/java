@@ -18,7 +18,12 @@
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
 
-  const isVisible = (el) => !!(el && el.offsetParent !== null);
+  const isVisible = (el) => {
+    if (!el) return false;
+    const style = window.getComputedStyle(el);
+    const hasSize = el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height > 0;
+    return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0' && hasSize;
+  };
   const isEnabled = (el) => !el.disabled && el.getAttribute('aria-disabled') !== 'true';
   const canClick = (el) => isVisible(el) && isEnabled(el);
 
@@ -98,7 +103,10 @@
   };
 
   const run = async () => {
-    if (RUN_ONCE_PER_SESSION && sessionStorage.getItem('tm_slot_randomizer_done') === '1') return;
+    if (RUN_ONCE_PER_SESSION && sessionStorage.getItem('tm_slot_randomizer_done') === '1') {
+      console.info('[TM Slot Random Selector] Script already executed in this session.');
+      return;
+    }
 
     const dateOptions = await waitFor(findDateOptions, MAX_WAIT_MS);
     if (!dateOptions.length) {
@@ -124,9 +132,11 @@
       return;
     }
 
-    await sleep(STEP_DELAY_MS);
-
-    const submitButton = findSubmitButton();
+    const submitCandidates = await waitFor(() => {
+      const submitButton = findSubmitButton();
+      return submitButton ? [submitButton] : [];
+    }, MAX_WAIT_MS);
+    const submitButton = submitCandidates[0];
     if (!submitButton) {
       console.warn('[TM Slot Random Selector] No submit button found.');
       return;
