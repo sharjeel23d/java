@@ -100,19 +100,28 @@
     if (sessionStorage.getItem('tm_slot_randomizer_done') === '1') return;
 
     const dateOptions = await waitFor(findDateOptions, MAX_WAIT_MS);
-    if (!dateOptions.length) return;
+    if (!dateOptions.length) {
+      console.warn('[TM Slot Random Selector] No enabled date options found.');
+      return;
+    }
     selectRandomOption(dateOptions);
 
     await sleep(STEP_DELAY_MS);
 
     const timeOptions = await waitFor(findTimeOptions, MAX_WAIT_MS);
-    if (!timeOptions.length) return;
+    if (!timeOptions.length) {
+      console.warn('[TM Slot Random Selector] No enabled time options found.');
+      return;
+    }
     selectRandomOption(timeOptions);
 
     await sleep(STEP_DELAY_MS);
 
     const submitButton = findSubmitButton();
-    if (!submitButton) return;
+    if (!submitButton) {
+      console.warn('[TM Slot Random Selector] No submit button found.');
+      return;
+    }
 
     sessionStorage.setItem('tm_slot_randomizer_done', '1');
     clickElement(submitButton);
