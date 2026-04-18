@@ -21,7 +21,8 @@
   const isVisible = (el) => {
     if (!el) return false;
     const style = window.getComputedStyle(el);
-    const hasSize = el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height > 0;
+    const rect = el.getBoundingClientRect();
+    const hasSize = rect.width > 0 && rect.height > 0;
     return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0' && hasSize;
   };
   const isEnabled = (el) => !el.disabled && el.getAttribute('aria-disabled') !== 'true';
@@ -142,8 +143,8 @@
       return;
     }
 
-    if (RUN_ONCE_PER_SESSION) sessionStorage.setItem('tm_slot_randomizer_done', '1');
     clickElement(submitButton);
+    if (RUN_ONCE_PER_SESSION) sessionStorage.setItem('tm_slot_randomizer_done', '1');
   };
 
   run().catch((error) => {
