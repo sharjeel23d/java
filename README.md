@@ -2,7 +2,7 @@
 
 Tampermonkey userscript for the Spain Visa appointment slot selection page:
 
-- File: `/home/runner/work/java/java/tampermonkey-slot-randomizer.user.js`
+- File: `tampermonkey-slot-randomizer.user.js`
 - Behavior: on the `SlotSelection` page, it picks a random enabled date, then a random enabled time slot, then submits the form.
 
 ## Install

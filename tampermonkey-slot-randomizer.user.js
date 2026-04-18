@@ -118,5 +118,7 @@
     clickElement(submitButton);
   };
 
-  run().catch(() => {});
+  run().catch((error) => {
+    console.error('[TM Slot Random Selector] Unexpected error:', error);
+  });
 })();
