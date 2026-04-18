@@ -13,6 +13,7 @@
 
   const MAX_WAIT_MS = 10000;
   const STEP_DELAY_MS = 1000;
+  const RUN_ONCE_PER_SESSION = true;
 
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const randomItem = (items) => items[Math.floor(Math.random() * items.length)];
@@ -97,14 +98,18 @@
   };
 
   const run = async () => {
-    if (sessionStorage.getItem('tm_slot_randomizer_done') === '1') return;
+    if (RUN_ONCE_PER_SESSION && sessionStorage.getItem('tm_slot_randomizer_done') === '1') return;
 
     const dateOptions = await waitFor(findDateOptions, MAX_WAIT_MS);
     if (!dateOptions.length) {
       console.warn('[TM Slot Random Selector] No enabled date options found.');
       return;
     }
-    selectRandomOption(dateOptions);
+    const selectedDate = selectRandomOption(dateOptions);
+    if (!selectedDate) {
+      console.warn('[TM Slot Random Selector] Failed to select a random date option.');
+      return;
+    }
 
     await sleep(STEP_DELAY_MS);
 
@@ -113,7 +118,11 @@
       console.warn('[TM Slot Random Selector] No enabled time options found.');
       return;
     }
-    selectRandomOption(timeOptions);
+    const selectedTime = selectRandomOption(timeOptions);
+    if (!selectedTime) {
+      console.warn('[TM Slot Random Selector] Failed to select a random time option.');
+      return;
+    }
 
     await sleep(STEP_DELAY_MS);
 
@@ -123,7 +132,7 @@
       return;
     }
 
-    sessionStorage.setItem('tm_slot_randomizer_done', '1');
+    if (RUN_ONCE_PER_SESSION) sessionStorage.setItem('tm_slot_randomizer_done', '1');
     clickElement(submitButton);
   };
 
